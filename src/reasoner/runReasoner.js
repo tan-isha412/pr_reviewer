@@ -1,8 +1,11 @@
-import askLLM from "./askLLM";
-import buildPrompt from "./buildprompt"
-import shouldSkip from "./shouldSkip"
-import parseResponse from "./parseResponse"
-import filterbys from "./filterByServerity"
+import askLLM from "./askLLM.js";
+import buildPrompt from "./buildprompt.js";
+import shouldSkip from "./shouldSkip.js";
+import parseResponse from "./parseResponse.js";
+import filterbys from "./filterByServerity.js";
+import dedupeFindings from "./dedupeFindings.js";
+import writeFindings from "./writeFindings.js";
+
 async function runReasoner(retrievedMatches)
 {
     const results=[];
@@ -18,7 +21,7 @@ async function runReasoner(retrievedMatches)
     }
     const filtered = filterbys(results);
     const unique = dedupeFindings(filtered);
-    writeFindigs(unique);
+    await writeFindings(unique);
     return unique;
 }
-module.exports=runReasoner;
+export default runReasoner;

@@ -1,0 +1,8 @@
+{
+  "name": "PR Reviewer",
+  "description": "A pull request code reviewer that checks for deviations from repo conventions using Gemini API.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

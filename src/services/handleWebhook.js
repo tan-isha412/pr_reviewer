@@ -1,4 +1,6 @@
 import retrieveMatches from "../retriever/retrieveMatches.js";
+import runReasoner from "../reasoner/runReasoner.js";
+import runDeliver from "../delivery/runDeliver.js";
 
 async function handleWebhook(req,res){
     const action=req.body.action;
@@ -9,6 +11,7 @@ async function handleWebhook(req,res){
     const owner=req.body.repository.owner.login;
     const repo=req.body.repository.name;
     const prNumber=req.body.pull_request.number;
+    const commitId = req.body.pull_request.head.sha;
     console.log(
     `Received PR #${prNumber} from ${owner}/${repo}`
 );

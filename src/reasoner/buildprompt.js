@@ -1,4 +1,4 @@
-async function buildPrompt(chunk,retrievedMatches)
+function buildPrompt(chunk,retrievedMatches)
 {
     const history = retrievedMatches.map((match, index) => `
 ${index + 1}. PR #${match.prNumber}
@@ -38,4 +38,4 @@ ${match.similarityScore}
    `;
    return prompt;
 }
-module.exports=buildPrompt;
+export default buildPrompt;

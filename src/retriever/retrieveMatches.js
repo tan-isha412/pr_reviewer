@@ -7,8 +7,8 @@ import readJson from "../utils/readJson.js";
 async function retrieveMatches(owner, repo, prNumber, dim,k) {
     const diff = await fetchDiff(owner, repo, prNumber);
     const queryChunks = parseDiff(diff);
-    const index = await loadIndex();
-    const storedChunks = await readJson("data/chunks.json");
+    const index = await loadIndex(dim);
+    const storedChunks = await readJson("data/processed/chunks.json");
     const results = [];
     for (const chunk of queryChunks) {
         const vector = await embedChunk(chunk);

@@ -6,4 +6,4 @@ await fs.writeFile(
     JSON.stringify(unique, null, 2)
 );
 }
-module.exports=writeFindings;
+export default writeFindings;

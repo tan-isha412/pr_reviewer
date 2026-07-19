@@ -13,3 +13,5 @@ async function runDeliver(owner,repo,pr_number,commit_id)
     }
     return result;
 }
+
+export default runDeliver;

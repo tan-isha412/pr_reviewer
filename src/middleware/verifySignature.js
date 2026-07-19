@@ -13,7 +13,7 @@ function verifySignature(req, res, next) {
     const digest =
         "sha256=" +
         crypto
-            .createHmac("sha256", process.env.WEBHOOK_SECRET)
+            .createHmac("sha256", process.env.GITHUB_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET || "")
             .update(req.rawBody)
             .digest("hex");
 

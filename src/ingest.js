@@ -1,3 +1,8 @@
+import fetch_prs from "./github/fetch_prs.js";
+import fetchDiff from "./github/fetchDiff.js";
+import fetchReviewComments from "./github/fetchReviewComments.js";
+import saveJson from "./utils/saveJson.js";
+
 async function runIngest(owner,repo)
 {
     const prs=await fetch_prs(owner,repo);
@@ -15,5 +20,7 @@ async function runIngest(owner,repo)
             review_comments: comm
         });
     }
-    await saveJson("C:/Users/tanis/OneDrive/Desktop/SEM-IV/projects_resume/pr_project/src/data/raw/decision-units.json",decisionUnits)
+    await saveJson("data/raw/decision-units.json",decisionUnits)
 }
+
+export default runIngest;

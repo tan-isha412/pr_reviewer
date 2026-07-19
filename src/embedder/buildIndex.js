@@ -1,4 +1,7 @@
-import faiss from "faiss-node";
+import faiss from "../utils/faissPolyfill.js";
+import readJson from "../utils/readJson.js";
+import embedChunk from "./embedChunk.js";
+
 async function buildIndex(path, dimension) {
 
     const chunks = await readJson(path);
@@ -10,3 +13,5 @@ async function buildIndex(path, dimension) {
     }
     return {index,chunks};
 }
+
+export default buildIndex;

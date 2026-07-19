@@ -1,6 +1,6 @@
 function shouldSkip(matches, threshold = 0.75) {
 
-    return matches.filter(
+    return matches.some(
         match => match.similarityScore >= threshold
     );
 
