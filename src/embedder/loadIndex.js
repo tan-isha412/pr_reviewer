@@ -1,4 +1,4 @@
-import faiss from "../utils/faissPolyfill.js";
+import faiss from "../utils/faiss/Polyfill.js";
 import path from "path";
 
 async function loadIndex(dimension) {
