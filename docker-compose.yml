@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Online Review Webhook Server
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pr_reviewer_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./data/raw:/app/data/raw
+      - ./data/processed:/app/data/processed
+
+  # Offline Preprocessing Pipeline (Run on demand: docker compose run preprocess)
+  preprocess:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pr_reviewer_preprocess
+    entrypoint: ["npm", "run", "preprocess"]
+    env_file:
+      - .env
+    volumes:
+      - ./data/raw:/app/data/raw
+      - ./data/processed:/app/data/processed
+    profiles:
+      - tools
