@@ -7,9 +7,7 @@ npm-debug.log
 .vscode
 .idea
 data/raw/
-data/raw/.gitkeep
 data/processed/
-data/processed/.gitkeep
-Dockerfile
+DockerFile
 docker-compose.yml
 README.md
