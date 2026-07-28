@@ -2,13 +2,13 @@ function buildChunks(pr, chunks) {
 
     return chunks.map(chunk => ({
 
-        prNumber: pr.number,
+        prNumber: pr.pr_number||pr.number,
 
         title: pr.title,
 
         author: pr.author,
 
-        mergedAt: pr.mergedAt,
+        mergedAt: pr.merged_at || pr.mergedAt,
 
         file: chunk.file,
 

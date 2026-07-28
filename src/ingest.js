@@ -5,7 +5,14 @@ import saveJson from "./utils/saveJson.js";
 
 async function runIngest(owner,repo)
 {
-    const prs=await fetch_prs(owner,repo);
+    const prs = await fetch_prs(owner, repo);
+
+console.log("Merged PRs found:", prs.length);
+
+if (prs.length > 0) {
+    console.log("First PR:", prs[0].number, prs[0].title);
+}
+
     const decisionUnits=[];
     for(const pr of prs)
     {

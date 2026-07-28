@@ -1,4 +1,4 @@
-import faiss from "../utils/faissPolyfill.js";
+import faiss from "../utils/faiss/Polyfill.js";
 import readJson from "../utils/readJson.js";
 import embedChunk from "./embedChunk.js";
 

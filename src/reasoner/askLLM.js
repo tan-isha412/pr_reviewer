@@ -1,23 +1,27 @@
 import { GoogleGenAI } from '@google/genai';
-const ai = new GoogleGenAI({ 
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build'
-    }
-  }
-});
+
 async function askLLM(prompt) {
-  try 
-  {
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn('GEMINI_API_KEY environment variable is not set.');
+      return "";
+    }
+    const ai = new GoogleGenAI({ 
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build'
+        }
+      }
+    });
     const response = await ai.models.generateContent({
-      model: 'gemini-3.5-flash',
+      model: 'gemini-2.5-flash',
       contents: prompt
     });
     return response.text;
   } 
-  catch (error) 
-  {
+  catch (error) {
     console.error('Error calling Gemini:', error);
     return "";
   }
