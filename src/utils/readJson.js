@@ -6,7 +6,7 @@ try {
         return JSON.parse(data);
     } catch (err) {
         if (err.code === "ENOENT") {
-            return fallback;
+            return [];
         }
         throw err;
     }

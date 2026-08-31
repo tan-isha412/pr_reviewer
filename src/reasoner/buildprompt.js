@@ -24,15 +24,18 @@ ${match.similarityScore}
    SIMILAR PAST DECISIONS FROM THIS REPO:
     ${history}
    
-   YOU NEED TO BE EXTRA SMART LIKE THE EINSTEIN AND GIVE THE OUTPUT AS A JSON FILE.eg.
+   YOU NEED TO BE EXTRA SMART LIKE THE EINSTEIN AND GIVE THE OUTPUT AS A JSON FILE.
+   "file" and "line" are required so this can be posted as an inline review comment:
+   set "file" to the exact path of the new code change above (${chunk.file}), and
+   "line" to the specific line number within its diff that the comment should attach to. eg.
    {
     deviates: false,
     deviationType: null,
     severity: "low",
     explanation: "...",
-    citedPr: 15
-    ...
-    ...
+    citedPr: 15,
+    file: "${chunk.file}",
+    line: 1
     }
 
    `;

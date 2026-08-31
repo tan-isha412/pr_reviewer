@@ -20,7 +20,7 @@ async function dedupeFindings(findings) {
             }
             try {
                 const res1 = await ai.models.embedContent({
-                    model: "text-embedding-004",
+                    model: "gemini-embedding-001",
                     contents: c.explanation
                 });
                 const v1 = res1.embeddings?.[0]?.values;
