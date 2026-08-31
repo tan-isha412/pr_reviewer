@@ -21,8 +21,8 @@ async function handleWebhook(req,res){
 
     if(results.length===0)
     console.log("No similar PRs found.");
-    await runReasoner(results);
-    await runDeliver(owner, repo, prNumber, commitId);
+    const findings = await runReasoner(results, { repo, prNumber, commitId });
+    await runDeliver(findings, owner, repo, prNumber, commitId);
     res.sendStatus(200);
     }
     catch(err)

@@ -6,7 +6,7 @@ import filterbys from "./filterByServerity.js";
 import dedupeFindings from "./dedupeFindings.js";
 import writeFindings from "./writeFindings.js";
 
-async function runReasoner(retrievedMatches)
+async function runReasoner(retrievedMatches, context)
 {
     const results=[];
    for (const element of retrievedMatches)
@@ -20,8 +20,8 @@ async function runReasoner(retrievedMatches)
         results.push(parsed); 
     }
     const filtered = filterbys(results);
-    const unique = dedupeFindings(filtered);
-    await writeFindings(unique);
+    const unique = await dedupeFindings(filtered);
+    await writeFindings(unique, context);
     return unique;
 }
 export default runReasoner;

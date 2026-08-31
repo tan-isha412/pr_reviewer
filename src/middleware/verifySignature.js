@@ -17,10 +17,12 @@ function verifySignature(req, res, next) {
             .update(req.rawBody)
             .digest("hex");
 
-    const isValid = crypto.timingSafeEqual(
-        Buffer.from(signature),
-        Buffer.from(digest)
-    );
+    const signatureBuffer = Buffer.from(signature);
+    const digestBuffer = Buffer.from(digest);
+
+    const isValid =
+        signatureBuffer.length === digestBuffer.length &&
+        crypto.timingSafeEqual(signatureBuffer, digestBuffer);
 
     if (!isValid) {
         return res.status(401).json({
