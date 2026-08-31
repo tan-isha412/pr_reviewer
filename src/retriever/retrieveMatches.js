@@ -8,7 +8,7 @@ async function retrieveMatches(owner, repo, prNumber, dim,k) {
     const diff = await fetchDiff(owner, repo, prNumber);
     const queryChunks = parseDiff(diff);
     const index = await loadIndex(dim);
-    const storedChunks = await readJson("data/processed/chunks.json");
+    const storedChunks = await readJson("data/processed/vector-metadata.json");
     const results = [];
     for (const chunk of queryChunks) {
         const vector = await embedChunk(chunk);

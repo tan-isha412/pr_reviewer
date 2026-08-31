@@ -32,7 +32,7 @@ async function runPreprocessing() {
     const chunksPath = "data/processed/chunks.json";
     const dimension = 768; // text-embedding-004 output dimension
     const { index } = await buildIndex(chunksPath, dimension);
-    console.log("Index built successfully.");
+    console.log("Index built successfully -> saved data/processed/vector-metadata.json");
 
     // Step 4: Save FAISS index
     console.log("[4/4] Running saveIndex()...");
