@@ -8,6 +8,6 @@ npm-debug.log
 .idea
 data/raw/
 data/processed/
-DockerFile
+Dockerfile
 docker-compose.yml
 README.md
