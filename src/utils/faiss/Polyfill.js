@@ -7,6 +7,10 @@ class IndexFlatL2 {
         this.vectors = [];
     }
 
+    get ntotal() {
+        return this.vectors.length;
+    }
+
     add(vector) {
         if (!Array.isArray(vector)) {
             throw new Error("Vector must be an array");
