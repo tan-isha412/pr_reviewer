@@ -19,7 +19,9 @@
     "dev": "node app.js",
     "start": "node app.js",
     "build": "echo \"Build completed\"",
-    "preprocess": "node src/preprocess.js"  },
+    "preprocess": "node src/preprocess.js",
+    "eval": "node eval/runEval.js"
+  },
   "dependencies": {
     "@google/genai": "^2.11.0",
     "@octokit/rest": "^22.0.1",

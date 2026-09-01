@@ -1,0 +1,158 @@
+{
+  "summary": {
+    "totalPRs": 12,
+    "truePositives": 4,
+    "falsePositives": 2,
+    "falseNegatives": 0,
+    "trueNegatives": 6,
+    "precision": 0.6666666666666666,
+    "recall": 1,
+    "evidenceQuality": "3/4 true positives cited the correct precedent PR"
+  },
+  "results": [
+    {
+      "prNumber": 1,
+      "title": "Add retry logic to embeddings and decouple metadata from chunks",
+      "kind": "convention",
+      "shouldFlag": false,
+      "flagged": false,
+      "citedPr": null,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.8775178911690054,
+      "explanation": null
+    },
+    {
+      "prNumber": 3,
+      "title": "Add a retryable fetch helper for flaky external calls",
+      "kind": "convention",
+      "shouldFlag": false,
+      "flagged": true,
+      "citedPr": 10,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.825327129013945,
+      "explanation": "The `sleep` helper function is already defined as a standalone utility in `src/utils/sleep.js` (introduced in PR #10). To promote consistency, avoid code duplication, and adhere to established patterns for shared utilities, `fetchWithRetry.js` should import and reuse the existing `sleep` function instead of redefining it internally."
+    },
+    {
+      "prNumber": 4,
+      "title": "Add a per-key cache writer instead of one shared file",
+      "kind": "convention",
+      "shouldFlag": false,
+      "flagged": false,
+      "citedPr": null,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.831426281960024,
+      "explanation": null
+    },
+    {
+      "prNumber": 5,
+      "title": "Validate required config eagerly at load time",
+      "kind": "convention",
+      "shouldFlag": false,
+      "flagged": false,
+      "citedPr": null,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.822803918062006,
+      "explanation": null
+    },
+    {
+      "prNumber": 6,
+      "title": "Add a separate vector index over PR authors' past explanations",
+      "kind": "violation",
+      "shouldFlag": true,
+      "flagged": true,
+      "citedPr": 12,
+      "expectedCitedPr": 1,
+      "citedCorrectly": false,
+      "topMatchScore": 0.9535017147713517,
+      "explanation": "The new code deviates from the established pattern for synchronizing the vector index with its corresponding metadata. In `buildAuthorIndex.js`, `metadata.push(entry)` occurs unconditionally on line 8. However, if `embedChunk` fails to return a vector (line 10), no vector is added to the `index`. This creates a critical mismatch where `metadata.length` will be greater than `index.ntotal`, leading to corrupted index-metadata mapping.\n\nPast decisions, particularly in PR #12 (`buildTitleIndex.js`) and the updated PR #1 (`buildIndex.js`), establish the convention that metadata should only be added *after* a vector has been successfully generated and added to the index. Both cited PRs also include a crucial runtime check (`index.ntotal !== metadata.length`) to explicitly enforce this invariant before the function returns, ensuring data integrity. This consistency check is missing in the new file, which could lead to significant issues when retrieving metadata based on search results from the FAISS index."
+    },
+    {
+      "prNumber": 7,
+      "title": "Add a helper to fetch a PR's labels",
+      "kind": "violation",
+      "shouldFlag": true,
+      "flagged": true,
+      "citedPr": 3,
+      "expectedCitedPr": 3,
+      "citedCorrectly": true,
+      "topMatchScore": 0.8185409101196481,
+      "explanation": "The `fetchLabels` function makes an external network call to the GitHub API via Octokit without implementing a retry mechanism. This deviates from the established pattern highlighted in PR #3's review comments, which explicitly state: \"Network calls to external services fail transiently and we shouldn't give up after a single attempt\". To ensure robustness, this external call should be wrapped with a retry logic, potentially utilizing a utility like `fetchWithRetry` if applicable, or implementing similar exponential backoff logic."
+    },
+    {
+      "prNumber": 8,
+      "title": "Add a rolling summary of delivered findings",
+      "kind": "violation",
+      "shouldFlag": true,
+      "flagged": true,
+      "citedPr": 4,
+      "expectedCitedPr": 4,
+      "citedCorrectly": true,
+      "topMatchScore": 0.831426281960024,
+      "explanation": "This new function `writeSummary` writes all findings to a single, shared file (`data/processed/summary.json`). This directly contradicts the convention established in PR #4, which emphasized the importance of using a per-key approach instead of a single shared file. The review comment in PR #4 explicitly states that 'concurrent writers round-tripping through a single shared path clobber each other, which is exactly the bug we fixed in the findings pipeline.' Writing to a single `summary.json` file creates a race condition and potential data loss if multiple calls to `writeSummary` occur concurrently."
+    },
+    {
+      "prNumber": 9,
+      "title": "Add configurable prompt tone setting",
+      "kind": "violation",
+      "shouldFlag": true,
+      "flagged": true,
+      "citedPr": 5,
+      "expectedCitedPr": 5,
+      "citedCorrectly": true,
+      "topMatchScore": 0.7982431937530078,
+      "explanation": "This function retrieves `PROMPT_TONE` from environment variables but does not validate its presence. If `process.env.PROMPT_TONE` is undefined, calling `.toUpperCase()` on it will lead to a runtime `TypeError`. This deviates from the established convention (seen in PR #5) that required configuration values should be eagerly validated upon loading, throwing a clear error immediately to prevent confusing failures later in the application lifecycle. Consider using a utility similar to `loadConfig` from PR #5 to ensure `PROMPT_TONE` is always defined before use."
+    },
+    {
+      "prNumber": 10,
+      "title": "Add a small promise-based sleep helper",
+      "kind": "compliant",
+      "shouldFlag": false,
+      "flagged": true,
+      "citedPr": 3,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.825327129013945,
+      "explanation": "This `sleep` function is functionally identical to the `sleep` helper already defined within `src/utils/fetchWithRetry.js` (introduced in PR #3). To uphold the 'Don't Repeat Yourself' (DRY) principle and ensure a single source of truth for common utilities, it would be best to consolidate this helper. We should define `sleep` once here in `src/utils/sleep.js` and then import it into `src/utils/fetchWithRetry.js`, removing the duplicated definition from that file. This establishes `src/utils/sleep.js` as the canonical asynchronous delay utility for the entire project."
+    },
+    {
+      "prNumber": 11,
+      "title": "Add a small date-formatting helper for delivery timestamps",
+      "kind": "compliant",
+      "shouldFlag": false,
+      "flagged": false,
+      "citedPr": null,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.8058898701552363,
+      "explanation": null
+    },
+    {
+      "prNumber": 12,
+      "title": "Add a separate vector index over historical PR titles",
+      "kind": "compliant",
+      "shouldFlag": false,
+      "flagged": false,
+      "citedPr": null,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.9535017147713517,
+      "explanation": null
+    },
+    {
+      "prNumber": 13,
+      "title": "Add a small helper to validate required params up front",
+      "kind": "compliant",
+      "shouldFlag": false,
+      "flagged": false,
+      "citedPr": null,
+      "expectedCitedPr": null,
+      "citedCorrectly": null,
+      "topMatchScore": 0.822803918062006,
+      "explanation": null
+    }
+  ]
+}

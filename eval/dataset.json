@@ -1,0 +1,102 @@
+[
+  {
+    "prNumber": 1,
+    "title": "Add retry logic to embeddings and decouple metadata from chunks",
+    "kind": "convention",
+    "convention": "index-metadata-lockstep",
+    "shouldFlag": false,
+    "note": "Establishes the convention: never let a vector index and its metadata sidecar fall out of lockstep."
+  },
+  {
+    "prNumber": 3,
+    "title": "Add a retryable fetch helper for flaky external calls",
+    "kind": "convention",
+    "convention": "retry-with-backoff",
+    "shouldFlag": false,
+    "note": "Establishes the convention: external/flaky calls must retry with exponential backoff."
+  },
+  {
+    "prNumber": 4,
+    "title": "Add a per-key cache writer instead of one shared file",
+    "kind": "convention",
+    "convention": "keyed-not-shared",
+    "shouldFlag": false,
+    "note": "Establishes the convention: persist results keyed by id, not round-tripped through one shared file."
+  },
+  {
+    "prNumber": 5,
+    "title": "Validate required config eagerly at load time",
+    "kind": "convention",
+    "convention": "fail-fast-config",
+    "shouldFlag": false,
+    "note": "Establishes the convention: validate required config eagerly and fail fast with a clear error."
+  },
+  {
+    "prNumber": 6,
+    "title": "Add a separate vector index over PR authors' past explanations",
+    "kind": "violation",
+    "convention": "index-metadata-lockstep",
+    "shouldFlag": true,
+    "expectedCitedPr": 1,
+    "note": "Pushes to metadata before confirming the paired vector was added -- same bug class as PR #1."
+  },
+  {
+    "prNumber": 7,
+    "title": "Add a helper to fetch a PR's labels",
+    "kind": "violation",
+    "convention": "retry-with-backoff",
+    "shouldFlag": true,
+    "expectedCitedPr": 3,
+    "note": "A single external GitHub API call with zero retry logic."
+  },
+  {
+    "prNumber": 8,
+    "title": "Add a rolling summary of delivered findings",
+    "kind": "violation",
+    "convention": "keyed-not-shared",
+    "shouldFlag": true,
+    "expectedCitedPr": 4,
+    "note": "Writes every call's findings to one shared data/processed/summary.json -- same race condition shape as the original findings.json bug."
+  },
+  {
+    "prNumber": 9,
+    "title": "Add configurable prompt tone setting",
+    "kind": "violation",
+    "convention": "fail-fast-config",
+    "shouldFlag": true,
+    "expectedCitedPr": 5,
+    "note": "Reads process.env.PROMPT_TONE deep inside a function with no upfront check -- crashes confusingly on .toUpperCase() if unset, instead of failing fast."
+  },
+  {
+    "prNumber": 15,
+    "title": "Add a small numeric clamp helper",
+    "kind": "compliant",
+    "convention": null,
+    "shouldFlag": false,
+    "note": "Trivial, unrelated utility -- nothing to flag. Replaces PR #10 (see eval/README.md: PR #10 accidentally duplicated PR #3's inline sleep() helper, which the bot correctly flagged as a real DRY violation -- not a model failure, a test-data flaw)."
+  },
+  {
+    "prNumber": 11,
+    "title": "Add a small date-formatting helper for delivery timestamps",
+    "kind": "compliant",
+    "convention": null,
+    "shouldFlag": false,
+    "note": "Trivial, unrelated utility -- nothing to flag."
+  },
+  {
+    "prNumber": 12,
+    "title": "Add a separate vector index over historical PR titles",
+    "kind": "compliant",
+    "convention": "index-metadata-lockstep",
+    "shouldFlag": false,
+    "note": "Deliberately similar in shape to PR #1/#6 (another small index builder) but implements the convention correctly -- tests for false positives on code that merely looks similar."
+  },
+  {
+    "prNumber": 13,
+    "title": "Add a small helper to validate required params up front",
+    "kind": "compliant",
+    "convention": "fail-fast-config",
+    "shouldFlag": false,
+    "note": "Deliberately similar in spirit to PR #5/#9 (config/param validation) but implements the convention correctly -- another false-positive check."
+  }
+]

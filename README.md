@@ -118,6 +118,22 @@ docker compose up app           # equivalent to step 2
 
 You'll still need `ngrok` (or another tunnel/deployment) separately to expose the containerized server for step 3.
 
+## Evaluation
+
+Rather than eyeball a few examples, the retrieval-then-reasoning pipeline is measured against
+a held-out, leave-one-out evaluation over 12 real, labeled PRs on this repo. Full methodology,
+the labeled dataset, and the "first run wasn't clean and here's what that revealed" story are
+in [`eval/README.md`](eval/README.md); raw output is in [`eval/results.json`](eval/results.json).
+
+## Deploying it somewhere always-on
+
+The webhook server is a plain Express app (`app.js`), so it runs on any Node host. Ready-to-use configs are checked in:
+
+- **Render** — [`render.yaml`](render.yaml): a Blueprint that builds with `npm install` and runs `npm start` on the free tier. Connect the repo on [render.com](https://render.com), it picks up the blueprint automatically, and you fill in the three env vars (`GITHUB_TOKEN`, `GITHUB_WEBHOOK_SECRET`, `GEMINI_API_KEY`) in the dashboard.
+- **Fly.io** — [`fly.toml`](fly.toml): builds from the existing [`Dockerfile`](Dockerfile). Run `fly launch --copy-config --no-deploy` then `fly secrets set GITHUB_TOKEN=... GITHUB_WEBHOOK_SECRET=... GEMINI_API_KEY=...` and `fly deploy`.
+
+Either way, once it's live: run `npm run preprocess -- <owner> <repo>` for the repo you want indexed (or bake that into a one-off release step), then point that repo's webhook at your deployment's `/webhook` URL instead of an `ngrok` tunnel — everything else in [Running it against your own repo](#running-it-against-your-own-repo) is identical.
+
 ## Testing
 
 ```bash
