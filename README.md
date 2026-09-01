@@ -160,6 +160,7 @@ Unit tests cover the pure parsing/reasoning logic (`parseDiff`, `attachComments`
 - **No dashboard yet.** All output today is inline PR comments. A dashboard for browsing flagged findings, tuning thresholds, or reviewing trends across PRs is a natural v1.1, not required to prove the core retrieval-then-reasoning value.
 - **No settings UI.** Thresholds (similarity cutoff, severity filter) are hardcoded constants today. Fine for a single-team deployment; a config UI is polish once there's more than one team using it.
 - **Cold-start on sparse history.** A repo with very few merged PRs (or PRs with no review comments) gives the system little to learn from — retrieval will rarely surface a strong match, so the bot will simply stay quiet rather than invent patterns from thin data.
+- **Free-tier LLM quota is a real ceiling.** `gemini-2.5-flash` is capped at 20 requests/day on the free tier — enough for casual use or a demo, not for a busy repo. A production deployment needs a paid tier or a slower delivery cadence. (Discovered the hard way mid-[evaluation run](eval/README.md), which now handles it by flagging affected results rather than silently treating an API failure as "no deviation.")
 
 ## License
 

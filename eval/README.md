@@ -49,15 +49,61 @@ deliberate pacing around the embedding API's per-minute quota).
 
 ## Results
 
-See `results.json` for the full per-PR output and computed precision/recall for the most
-recent completed run. Numbers are intentionally not duplicated here to avoid this file going
-stale relative to the actual data -- read `results.json`'s `summary` block for the current
-headline figures, and see the narrative below for how the corpus itself was corrected after
-the first run surfaced a labeling problem.
+| Metric | Value |
+|---|---|
+| PRs evaluated | 12 |
+| True positives | 4 / 4 real violations caught |
+| False negatives | 0 |
+| False positives | 1 (PR #1 -- see below) |
+| Precision | 0.8 |
+| Recall | 1.0 |
+| Evidence quality | 4/4 true positives cited the correct precedent PR |
 
-### The first run wasn't clean, and that's the interesting part
+Full per-PR output is in `results.json`. All 4 real violations (PRs #6-#9) were caught, each
+correctly citing the specific PR that established the convention it broke -- verified by hand,
+not just by the automated `citedPr` match (see the PR #6 note below).
 
-The first raw run (`results-run1-raw.json`) scored precision 0.67, recall 1.0, with 2 "false
+### A quota limit surfaced mid-run, and it's worth being honest about
+
+The free tier caps `gemini-2.5-flash` (the reasoning model) at **20 requests/day**. That cap
+was hit partway through this run: 3 of the 12 folds (PRs #12, #13, #15) had their `askLLM`
+call fail with a 429, which the real (unmodified) error handling in `askLLM.js` catches and
+turns into an empty string -- `parseResponse` then correctly returns `null` for that, so the
+PR was recorded as "not flagged." That happens to match all 3 PRs' correct `shouldFlag: false`
+label, but it wasn't a genuine judgment call by the model. `results.json` flags these
+explicitly (`quotaAffected: true`) rather than quietly presenting them as validated.
+
+This does **not** change the precision/recall numbers above: both metrics depend only on
+true/false positive and false negative counts, and every true and false positive in this run
+came from a confirmed, genuine LLM call (PRs #1, #3-#9, #11 all got a real response, verified
+by the absence of any 429 in the log immediately before their result). Only the *confirmation*
+of 3 true negatives is incomplete -- worth flagging as a real constraint of evaluating an
+LLM-based system on a free-tier key, and a good reason `runEval.js`'s embedding cache also
+tracks fold results separately, so a future re-run only needs to re-resolve those 3 folds
+(clear their entries from `.cache/fold-results.json`) once the daily quota resets, rather than
+repeating the whole corpus.
+
+### A genuine false positive: PR #1, citing PR #4
+
+Unlike the DRY-duplication case below, this one *is* a real reasoning overreach, not a bad
+label. The model flagged `buildIndex.js` (PR #1) for writing its metadata to a single hardcoded
+path (`data/processed/vector-metadata.json`), citing PR #4's "write keyed by id, not to one
+shared file" convention. But PR #4's convention is about *concurrent, per-request* writers
+clobbering each other (the real bug it fixed: two overlapping webhook deliveries racing on
+one `findings.json`). `buildIndex.js` runs once, offline, per full-corpus rebuild -- there is
+exactly one index at a time, so one canonical output file is the *correct* design, not a
+violation of it. The model pattern-matched on "writes JSON to a path" without reasoning about
+whether the code path in question is single-shot or concurrent/repeated.
+
+That's a legitimate calibration gap worth naming rather than quietly excluding: a targeted next
+step would be tightening `buildprompt.js` to ask the model to consider call cardinality (does
+this run once, or many times concurrently?) before applying a shared-file-race-style
+convention -- not implemented here, since verifying a prompt change needs more of the same
+rate-limited `askLLM` calls this run already exhausted for the day.
+
+### Background: an earlier raw run wasn't clean either
+
+Before the run above, an earlier attempt (`results-run1-raw.json`) scored precision 0.67, recall 1.0, with 2 "false
 positives": PR #3 (`fetchWithRetry.js`) and PR #10 (`sleep.js`, since replaced by PR #15 in
 the active dataset) were both flagged as deviating from each other.
 
